@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="faviconconfiguroweb.png" />
+    <title>Chatbot Interface</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cabecera.css') }}">
+    <img src="{{ url_for('static', filename='fondolegal.jpg') }}" alt="Fondo Legal">      
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css">    
+    <style>
+        /* Estilos para el chatbot */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            width: 300px;
+            font-size: 11px;
+            color: #333;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            border-color: black;
+        }
+
+        /* Mensajes del chat */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: auto;
+            min-height: 0;
+            max-height: 450px;
+            background-color: #f1f1f1; /* Color de fondo de los mensajes */
+        }
+
+        /* Estilo del mensaje del usuario */
+        .user-message {
+            color: black;
+            text-align: right;
+        }
+
+        /* Estilo del mensaje del chatbot */
+        .chatbot-message {
+            color: green;
+            text-align: left;
+            background-color: #DCDCDC;
+        }
+
+        /* Formulario de entrada */
+        .input-form {
+            display: flex;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 0;
+            border-radius: 0;
+            width: 297px;
+            background-color: #f1f1f1;
+            margin-left: -9px;
+        }
+
+        /* Campo de entrada del usuario */
+        .user-input {
+            margin-left: 0px;
+            margin-top: 0px;
+            background-color: #f1f1f1;
+            width: 500px;
+            height: 30px;
+            font-size: 11px;
+            text-align: left;
+        }
+
+        /* Botón de envío */
+        .send-button {
+            background-color: #007bff;
+            color: #fff;
+            margin-top: 0;
+            cursor: pointer;
+            height: 30px;
+            width: 100px;
+            margin-right: 1px;
+        }
+
+        body {
+            background-color: #33B2FF; /* Cambia este valor para el color de fondo de la página */
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <div class="chatbot-container">
+        <div class="chat-messages" id="chat-messages"></div>
+        <form class="input-form" id="chat-form">
+            <input type="text" class="user-input" id="user-input" placeholder="Escribe tu pregunta aquí...">
+            <button type="submit" class="send-button">Enviar</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#chat-form').submit(function (event) {
+                event.preventDefault();
+
+                var userInput = $('#user-input').val();
+                $('#user-input').val('');
+
+                // Antes de la llamada a $.post en tu código JavaScript
+                var userMessage = '<p class="user-message"><strong>Tú:</strong> ' + userInput + '</p>';
+                var writingMessage = '<p class="chatbot-message"><strong>Chatbot:</strong> Escribiendo...</p>';
+                $('#chat-messages').append(userMessage + writingMessage);
+
+                $.post("/get_response", { user_input: userInput }, function (data) {
+                    $('#chat-messages').find('.chatbot-message:last').remove(); // Elimina el mensaje de "Escribiendo..."
+                    
+                    var chatbotMessage = '<p class="chatbot-message"><strong>Chatbot:</strong> ' + data.response + '</p>';
+                    $('#chat-messages').append(chatbotMessage);
+
+                    var container = document.getElementById("chat-messages");
+                    container.scrollTop = container.scrollHeight;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

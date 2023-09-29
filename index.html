@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot Interface</title>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <div id="chat-container">
+        <div id="chat-history"></div>
+        <div id="user-input">
+            <input type="text" id="user-input-text">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#send-button").click(function () {
+                var user_input = $("#user-input-text").val();
+                $("#user-input-text").val("");
+
+                $.post("/get_response", { user_input: user_input }, function (data) {
+                    var chat_history = $("#chat-history");
+                    chat_history.append("<div>You: " + user_input + "</div>");
+                    chat_history.append("<div>AI: " + data.response + "</div>");
+                    chat_history.scrollTop(chat_history.prop("scrollHeight"));
+                });
+            });
+        });
+    </script>
+</body>
+</html>
